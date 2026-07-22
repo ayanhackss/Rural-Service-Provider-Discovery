@@ -1,0 +1,109 @@
+## PROBLEM STATEMENT
+
+Rural residents often struggle to find reliable service providers (plumbers, electricians, tutors) due to lack of centralized information and booking tools.
+
+Existing methods are manual, word-of-mouth, or limited to urban-centric apps, leaving rural needs unmet.
+
+---
+
+## DESCRIPTION
+
+Students will build a MERN stack web app where rural service providers can register, list their offerings, and manage bookings, while residents can search, review, and book providers. Features include authentication for providers and residents, service listings, booking calendar, reviews, and admin dashboards. This solution empowers rural communities with easy access to trusted services, improving convenience and livelihood.
+
+---
+
+## TOOLS & STACK
+
+* React.js
+* Node.js
+* Express.js
+* MongoDB
+* FullCalendar
+
+---
+
+## WHAT YOU'LL BUILD (MVP FEATURES)
+
+### Service Provider Registration & Listings
+
+Providers create accounts and list their services with details.
+
+**Why:** Centralizes offerings for easy discovery by residents.
+
+### Service Search & Filter
+
+Residents search for services by category, rating, or location.
+
+**Why:** Improves usability and relevance for rural users.
+
+### Booking Calendar & Management
+
+Residents book services; providers manage and confirm appointments.
+
+**Why:** Simplifies scheduling and reduces missed appointments.
+
+### Reviews & Ratings
+
+Residents can leave reviews and ratings for providers.
+
+**Why:** Builds trust and helps others find reliable services.
+
+### Admin Dashboard
+
+Admins oversee provider activities, bookings, and manage disputes.
+
+**Why:** Ensures quality control and platform integrity.
+
+---
+
+## SUGGESTED TECH STACK
+
+Frontend: **React.js**
+
+Backend: **Node.js with Express.js**
+
+Database: **MongoDB**
+
+AI Ml: **Not applicable**
+
+Deployment: **AWS Amplify**
+
+---
+
+## LEARNING OUTCOMES
+
+* Students will build booking and calendar systems with MERN stack.
+* Students will implement review and rating features for trust-building.
+* Students will create dashboards for platform management and dispute resolution.
+* Students will enable role-based authentication and service listing CRUD.
+
+---
+
+## KEY CONCEPTS TO DEMONSTRATE
+
+* authentication
+* CRUD operations
+* dashboard
+* booking
+* React
+* MongoDB
+
+---
+
+## PHASES
+
+### 1. Research & System Design · 2 days
+
+Define provider/resident workflows, design booking and review models, plan APIs.
+
+### 2. Core Development · 7 days
+
+Build provider registration, service listing, booking calendar, reviews, dashboards.
+
+### 3. Integration & Testing · 3 days
+
+Test workflows, fix bugs, validate booking and review features.
+
+### 4. Polish, Deploy & Present · 2 days
+
+Deploy app, add docs, record demo, prepare final presentation.
