@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import SearchServices from './pages/SearchServices';
 import ServiceDetail from './pages/ServiceDetail';
+import ProjectInfo from './pages/ProjectInfo';
 
 // Resident pages
 import MyBookings from './pages/resident/MyBookings';
@@ -48,6 +49,7 @@ function AnimatedRoutes() {
         <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
         <Route path="/services" element={<PageTransition><SearchServices /></PageTransition>} />
         <Route path="/services/:id" element={<PageTransition><ServiceDetail /></PageTransition>} />
+        <Route path="/project-info" element={<PageTransition><ProjectInfo /></PageTransition>} />
 
         {/* Resident */}
         <Route path="/resident/bookings" element={<ProtectedRoute roles={['resident']}><PageTransition><MyBookings /></PageTransition></ProtectedRoute>} />

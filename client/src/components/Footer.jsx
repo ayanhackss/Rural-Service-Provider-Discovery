@@ -24,6 +24,7 @@ export default function Footer() {
           <h3 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-4)', color: 'var(--color-ink)', fontWeight: 500 }}>Quick Links</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
             <Link to="/services" style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)', textDecoration: 'none' }}>Find a Service</Link>
+            <Link to="/project-info" style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)', textDecoration: 'none' }}>Project Info</Link>
             <Link to="/register" style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)', textDecoration: 'none' }}>Join as Provider</Link>
             <Link to="/login" style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)', textDecoration: 'none' }}>Sign In</Link>
           </div>
