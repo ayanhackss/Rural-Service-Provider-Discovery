@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyBookings, updateBookingStatus } from '../../api/bookings';
 import { postReview, canReview } from '../../api/reviews';
+import { toast } from 'react-hot-toast';
 import Navbar from '../../components/Navbar';
 import StarRating from '../../components/StarRating';
-import Loader from '../../components/Loader';
+import Skeleton from '../../components/Skeleton';
+import EmptyState from '../../components/EmptyState';
 import { CalendarX, CalendarDays, User } from 'lucide-react';
 
 const STATUSES = ['', 'pending', 'confirmed', 'completed', 'cancelled'];
@@ -16,7 +18,6 @@ export default function MyBookings() {
   const [reviewModal, setReviewModal] = useState(null); // { booking }
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState('');
-  const [reviewMsg, setReviewMsg] = useState('');
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -33,30 +34,35 @@ export default function MyBookings() {
 
   const handleCancel = async (id) => {
     if (!window.confirm('Cancel this booking?')) return;
-    await updateBookingStatus(id, 'cancelled');
-    fetchBookings();
+    try {
+      await updateBookingStatus(id, 'cancelled');
+      toast.success('Booking cancelled');
+      fetchBookings();
+    } catch (err) {
+      toast.error('Failed to cancel booking');
+    }
   };
 
   const openReview = async (booking) => {
     const { data } = await canReview(booking._id);
     if (!data.canReview) {
-      alert('You can only review a completed booking once.');
+      toast.error('You can only review a completed booking once.');
       return;
     }
     setReviewModal(booking);
     setReviewRating(0);
     setReviewComment('');
-    setReviewMsg('');
   };
 
   const submitReview = async () => {
-    if (!reviewRating) return setReviewMsg('Please select a rating');
+    if (!reviewRating) return toast.error('Please select a rating');
     try {
       await postReview({ bookingId: reviewModal._id, rating: reviewRating, comment: reviewComment });
+      toast.success('Review submitted!');
       setReviewModal(null);
       fetchBookings();
     } catch (err) {
-      setReviewMsg(err.response?.data?.message || 'Review failed');
+      toast.error(err.response?.data?.message || 'Review failed');
     }
   };
 
@@ -84,13 +90,18 @@ export default function MyBookings() {
           </div>
 
           {loading ? (
-            <Loader />
-          ) : bookings.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 'var(--space-12) 0', color: 'var(--color-muted)' }}>
-              <CalendarX size={48} strokeWidth={1} style={{ marginBottom: 'var(--space-4)', opacity: 0.5 }} />
-              <p style={{ fontStyle: 'italic' }}>You have no bookings yet.</p>
-              <Link to="/services" className="btn btn-outline" style={{ marginTop: 'var(--space-6)' }}>Find a Service</Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <Skeleton height="120px" />
+              <Skeleton height="120px" />
+              <Skeleton height="120px" />
             </div>
+          ) : bookings.length === 0 ? (
+            <EmptyState 
+              icon={CalendarX} 
+              title="No bookings yet" 
+              description="You haven't made any bookings matching this status." 
+              action={<Link to="/services" className="btn btn-primary">Find a Service</Link>} 
+            />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {bookings.map((b) => (
@@ -188,7 +199,6 @@ export default function MyBookings() {
                   rows={3}
                 />
               </div>
-              {reviewMsg && <div className="alert alert-error" style={{ marginBottom: 'var(--space-4)' }}>{reviewMsg}</div>}
               <button className="btn btn-primary btn-full" onClick={submitReview}>Submit review</button>
             </div>
           </div>

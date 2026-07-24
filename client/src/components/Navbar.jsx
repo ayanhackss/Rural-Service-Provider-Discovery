@@ -1,12 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Moon, Sun } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDark]);
 
   const handleLogout = () => {
     logout();
@@ -41,6 +53,14 @@ export default function Navbar() {
           </div>
 
           <div className="navbar__actions">
+            <button 
+              className="btn btn-ghost btn-sm" 
+              onClick={() => setIsDark(!isDark)}
+              style={{ padding: 'var(--space-2)' }}
+              title="Toggle Dark Mode"
+            >
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             {user ? (
               <>
                 <span className="label" style={{ color: 'var(--color-muted)' }}>

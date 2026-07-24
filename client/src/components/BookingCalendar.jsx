@@ -1,7 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import { useEffect, useState, useRef } from 'react';
 import { getServiceSlots } from '../api/bookings';
 
 const SLOT_TIMES = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
@@ -9,6 +6,7 @@ const SLOT_TIMES = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00
 export default function BookingCalendar({ service, onSlotSelect, selectedDate, selectedSlot }) {
   const [bookedSlots, setBookedSlots] = useState([]);
   const [daySlots, setDaySlots] = useState([]);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     if (service?._id) {
@@ -16,67 +14,128 @@ export default function BookingCalendar({ service, onSlotSelect, selectedDate, s
     }
   }, [service?._id]);
 
-  // Build events for calendar — highlight booked dates
-  const events = bookedSlots.map((b) => ({
-    date: b.date.split('T')[0],
-    title: b.timeSlot,
-    color: b.status === 'confirmed' ? 'var(--color-error)' : 'var(--color-pending)',
-  }));
+  // Generate next 14 days
+  const dates = Array.from({ length: 14 }).map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    return {
+      dateObj: d,
+      dateStr: d.toISOString().split('T')[0],
+      dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      dayNumber: d.getDate(),
+      fullDayName: d.toLocaleDateString('en-US', { weekday: 'long' })
+    };
+  });
 
-  // When user clicks a day, compute available slots
-  const handleDateClick = useCallback((info) => {
-    const dateStr = info.dateStr;
+  const handleDateClick = (dateInfo) => {
+    // Haptic feedback if supported
+    if (navigator.vibrate) navigator.vibrate(20);
+
     const bookedOnDay = bookedSlots
-      .filter((b) => b.date.startsWith(dateStr))
+      .filter((b) => b.date.startsWith(dateInfo.dateStr))
       .map((b) => b.timeSlot);
 
-    // Get provider availability for that day
-    const dayName = new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long' });
-    const dayAvailability = service?.availability?.find((a) => a.day === dayName);
+    const dayAvailability = service?.availability?.find((a) => a.day === dateInfo.fullDayName);
     const providerSlots = dayAvailability?.slots || SLOT_TIMES;
 
     const available = providerSlots.filter((s) => !bookedOnDay.includes(s));
     setDaySlots(available);
-    onSlotSelect && onSlotSelect(dateStr, null); // reset slot when date changes
-  }, [bookedSlots, service, onSlotSelect]);
+    onSlotSelect && onSlotSelect(dateInfo.dateStr, null);
+  };
+
+  const handleSlotClick = (slot) => {
+    if (navigator.vibrate) navigator.vibrate(30);
+    onSlotSelect && onSlotSelect(selectedDate, slot);
+  };
 
   return (
-    <div>
-      <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        dateClick={handleDateClick}
-        events={events}
-        height="auto"
-        validRange={{ start: new Date().toISOString().split('T')[0] }}
-        headerToolbar={{
-          left: 'prev',
-          center: 'title',
-          right: 'next',
+    <div className="booking-calendar">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
+        <h3 style={{ fontSize: 'var(--text-lg)', fontStyle: 'italic' }}>Select a Date</h3>
+      </div>
+      
+      {/* Horizontal Date Scroller */}
+      <div 
+        ref={scrollRef}
+        style={{
+          display: 'flex',
+          overflowX: 'auto',
+          gap: 'var(--space-3)',
+          paddingBottom: 'var(--space-4)',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
         }}
-      />
+      >
+        {dates.map((d) => {
+          const isSelected = selectedDate === d.dateStr;
+          return (
+            <button
+              key={d.dateStr}
+              onClick={() => handleDateClick(d)}
+              className="card fade-in-up"
+              style={{
+                flex: '0 0 auto',
+                width: '72px',
+                padding: 'var(--space-3)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 'var(--space-1)',
+                border: isSelected ? '2px solid var(--color-accent)' : '1px solid var(--color-rule)',
+                background: isSelected ? 'oklch(72% 0.18 80 / 0.1)' : 'var(--color-paper-2)',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <span className="label" style={{ color: isSelected ? 'var(--color-accent)' : 'var(--color-muted)', fontSize: '10px' }}>
+                {d.dayName}
+              </span>
+              <span style={{ fontFamily: 'var(--font-outlier)', fontSize: 'var(--text-xl)', color: 'var(--color-ink)', lineHeight: 1 }}>
+                {d.dayNumber}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       {selectedDate && (
-        <div style={{ marginTop: 'var(--space-6)' }}>
-          <p className="label" style={{ marginBottom: 'var(--space-3)', color: 'var(--color-accent)' }}>
+        <div className="fade-in-up" style={{ marginTop: 'var(--space-6)' }}>
+          <p className="label" style={{ marginBottom: 'var(--space-4)', color: 'var(--color-accent)' }}>
             Available slots — {new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
 
           {daySlots.length === 0 ? (
-            <p className="muted" style={{ fontSize: 'var(--text-sm)' }}>No available slots on this day.</p>
+            <p className="muted" style={{ fontSize: 'var(--text-sm)', fontStyle: 'italic' }}>No available slots on this day.</p>
           ) : (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
-              {daySlots.map((slot) => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => onSlotSelect && onSlotSelect(selectedDate, slot)}
-                  className={`btn btn-sm ${selectedSlot === slot ? 'btn-primary' : 'btn-outline'}`}
-                  style={{ fontFamily: 'var(--font-outlier)' }}
-                >
-                  {slot}
-                </button>
-              ))}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 'var(--space-3)' }}>
+              {daySlots.map((slot) => {
+                const isSelected = selectedSlot === slot;
+                return (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => handleSlotClick(slot)}
+                    className="card"
+                    style={{
+                      padding: 'var(--space-3)',
+                      fontFamily: 'var(--font-outlier)',
+                      fontSize: 'var(--text-sm)',
+                      background: isSelected ? 'var(--color-accent)' : 'var(--color-paper-3)',
+                      color: isSelected ? 'oklch(13% 0.010 80)' : 'var(--color-ink)',
+                      border: '1px solid',
+                      borderColor: isSelected ? 'var(--color-accent)' : 'var(--color-rule)',
+                      textAlign: 'center',
+                      borderRadius: 'var(--radius-sm)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      transform: isSelected ? 'scale(0.98)' : 'scale(1)'
+                    }}
+                  >
+                    {slot}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

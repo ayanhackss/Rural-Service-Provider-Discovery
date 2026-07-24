@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getProviderBookings, updateBookingStatus } from '../../api/bookings';
+import { toast } from 'react-hot-toast';
 import Navbar from '../../components/Navbar';
-import Loader from '../../components/Loader';
+import Skeleton from '../../components/Skeleton';
+import EmptyState from '../../components/EmptyState';
 import { Inbox, User, CalendarDays } from 'lucide-react';
 
 const STATUSES = ['', 'pending', 'confirmed', 'completed', 'cancelled'];
@@ -33,8 +35,13 @@ export default function ManageBookings() {
   useEffect(() => { fetch(); }, [tab]);
 
   const handleAction = async (id, status) => {
-    await updateBookingStatus(id, status);
-    fetch();
+    try {
+      await updateBookingStatus(id, status);
+      toast.success(`Booking ${status}`);
+      fetch();
+    } catch (err) {
+      toast.error('Failed to update booking status');
+    }
   };
 
   return (
@@ -66,12 +73,16 @@ export default function ManageBookings() {
           </div>
 
           {loading ? (
-            <Loader />
-          ) : bookings.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 'var(--space-12) 0', color: 'var(--color-muted)' }}>
-              <Inbox size={48} strokeWidth={1} style={{ marginBottom: 'var(--space-4)', opacity: 0.5 }} />
-              <p style={{ fontStyle: 'italic' }}>No bookings found for the selected status.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <Skeleton height="100px" />
+              <Skeleton height="100px" />
             </div>
+          ) : bookings.length === 0 ? (
+            <EmptyState 
+              icon={Inbox} 
+              title="No bookings" 
+              description="No bookings found for the selected status." 
+            />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {bookings.map((b) => (

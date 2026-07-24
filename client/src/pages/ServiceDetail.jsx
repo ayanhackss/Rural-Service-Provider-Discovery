@@ -4,10 +4,11 @@ import { getService } from '../api/services';
 import { createBooking } from '../api/bookings';
 import { getServiceReviews } from '../api/reviews';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import BookingCalendar from '../components/BookingCalendar';
 import StarRating from '../components/StarRating';
-import Loader from '../components/Loader';
+import Skeleton from '../components/Skeleton';
 import { MapPin, Phone, MessageSquare, CheckCircle, User, Star } from 'lucide-react';
 
 export default function ServiceDetail() {
@@ -24,10 +25,6 @@ export default function ServiceDetail() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingNotes, setBookingNotes] = useState('');
   const [bookingLoading, setBookingLoading] = useState(false);
-  const [bookingMsg, setBookingMsg] = useState(null);
-
-  // Review state
-  const [reviewMsg, setReviewMsg] = useState(null);
 
   useEffect(() => {
     Promise.all([getService(id), getServiceReviews(id)])
@@ -42,34 +39,41 @@ export default function ServiceDetail() {
   const handleSlotSelect = (date, slot) => {
     setSelectedDate(date);
     setSelectedSlot(slot);
-    setBookingMsg(null);
   };
 
   const handleBook = async () => {
     if (!user) return navigate('/login');
-    if (!selectedDate || !selectedSlot) return setBookingMsg({ type: 'error', text: 'Please select a date and time slot.' });
+    if (!selectedDate || !selectedSlot) return toast.error('Please select a date and time slot.');
 
+    if (navigator.vibrate) navigator.vibrate(50);
     setBookingLoading(true);
-    setBookingMsg(null);
     try {
       await createBooking({ serviceId: id, date: selectedDate, timeSlot: selectedSlot, notes: bookingNotes });
-      setBookingMsg({ type: 'success', text: 'Booking request sent! The provider will confirm shortly.' });
+      toast.success('Booking request sent! The provider will confirm shortly.', { duration: 4000 });
       setSelectedDate(null);
       setSelectedSlot(null);
       setBookingNotes('');
     } catch (err) {
-      setBookingMsg({ type: 'error', text: err.response?.data?.message || 'Booking failed' });
+      toast.error(err.response?.data?.message || 'Booking failed');
     } finally {
       setBookingLoading(false);
     }
   };
 
-  const handleReview = async (e) => {
+  const handleReview = (e) => {
     e.preventDefault();
-    setReviewMsg({ type: 'info', text: 'To leave a review, go to My Bookings and review a completed booking.' });
+    toast('To leave a review, go to My Bookings and review a completed booking.', { icon: 'ℹ️' });
   };
 
-  if (loading) return <><Navbar /><Loader fullPage /></>;
+  if (loading) return (
+    <>
+      <Navbar />
+      <div className="container" style={{ padding: 'var(--space-12) 0' }}>
+        <Skeleton height="300px" style={{ marginBottom: 'var(--space-6)' }} />
+        <Skeleton height="400px" />
+      </div>
+    </>
+  );
 
   const provider = service.providerId;
 
@@ -153,10 +157,6 @@ export default function ServiceDetail() {
                     )}
                   </div>
 
-                  {reviewMsg && (
-                    <div className={`alert alert-${reviewMsg.type}`} style={{ marginBottom: 'var(--space-6)' }}>{reviewMsg.text}</div>
-                  )}
-
                   {reviews.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: 'var(--space-12) 0', color: 'var(--color-muted)' }}>
                       <MessageSquare size={40} strokeWidth={1} style={{ marginBottom: 'var(--space-4)', opacity: 0.5, margin: '0 auto' }} />
@@ -224,10 +224,6 @@ export default function ServiceDetail() {
                               rows={3}
                             />
                           </div>
-
-                          {bookingMsg && (
-                            <div className={`alert alert-${bookingMsg.type}`} style={{ marginBottom: 'var(--space-4)' }}>{bookingMsg.text}</div>
-                          )}
 
                           <button className="btn btn-primary btn-full" onClick={handleBook} disabled={bookingLoading} style={{ height: '48px', fontSize: 'var(--text-md)' }}>
                             {bookingLoading ? 'Sending request…' : user ? 'Request booking' : 'Sign in to book'}

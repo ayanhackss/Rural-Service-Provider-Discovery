@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import BottomNav from './components/BottomNav';
 
 // Pages
 import Home from './pages/Home';
@@ -70,6 +72,8 @@ export default function App() {
           {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <BottomNav />
+        <Toaster position="bottom-right" toastOptions={{ className: 'card', style: { borderRadius: 'var(--radius-sm)', background: 'var(--color-paper-2)', color: 'var(--color-ink)', border: '1px solid var(--color-rule)' } }} />
       </AuthProvider>
     </BrowserRouter>
   );
