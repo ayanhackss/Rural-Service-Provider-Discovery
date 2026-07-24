@@ -6,15 +6,15 @@
 
 /* ─── TOKENS ─────────────────────────────────────────────── */
 :root {
-  /* Paper — deep warm dark (anchor hue 80 = amber-green) */
-  --color-paper:    oklch(13% 0.010 80);
-  --color-paper-2:  oklch(17% 0.012 80);
-  --color-paper-3:  oklch(22% 0.014 80);
-  --color-rule:     oklch(30% 0.010 75);
+  /* Paper — light warm (anchor hue 80 = amber-green) */
+  --color-paper:    oklch(98% 0.005 80);
+  --color-paper-2:  oklch(95% 0.010 80);
+  --color-paper-3:  oklch(92% 0.014 80);
+  --color-rule:     oklch(88% 0.010 75);
   --color-neutral:  oklch(52% 0.008 78);
-  --color-muted:    oklch(68% 0.007 80);
-  --color-ink:      oklch(94% 0.006 82);
-  --color-ink-dim:  oklch(78% 0.008 82);
+  --color-muted:    oklch(45% 0.007 80);
+  --color-ink:      oklch(15% 0.006 82);
+  --color-ink-dim:  oklch(35% 0.008 82);
 
   /* Accent — warm amber, used < 5% of viewport */
   --color-accent:   oklch(72% 0.18  80);
