@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -97,6 +98,43 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Secondary Sub-Navbar for Dashboards */}
+      {user && location.pathname.startsWith(`/${user.role === 'resident' ? 'resident' : user.role}`) && (
+        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-rule)' }}>
+          <div className="container" style={{ display: 'flex', gap: 'var(--space-4)', overflowX: 'auto', padding: 'var(--space-3) 0', whiteSpace: 'nowrap' }}>
+            {user.role === 'admin' && (
+              <>
+                <NavLink to="/admin" end className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Overview</NavLink>
+                <NavLink to="/admin/analytics" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Analytics</NavLink>
+                <NavLink to="/admin/providers" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Providers</NavLink>
+                <NavLink to="/admin/residents" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Residents</NavLink>
+                <NavLink to="/admin/bookings" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Bookings</NavLink>
+                <NavLink to="/admin/reviews" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Reviews</NavLink>
+                <NavLink to="/admin/announcements" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Announcements</NavLink>
+              </>
+            )}
+            {user.role === 'provider' && (
+              <>
+                <NavLink to="/provider/listings" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Services</NavLink>
+                <NavLink to="/provider/bookings" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Bookings</NavLink>
+                <NavLink to="/provider/availability" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Availability</NavLink>
+                <NavLink to="/provider/earnings" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Earnings</NavLink>
+                <NavLink to="/provider/reviews" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Reviews</NavLink>
+                <NavLink to="/provider/profile" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Profile</NavLink>
+              </>
+            )}
+            {user.role === 'resident' && (
+              <>
+                <NavLink to="/resident/bookings" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>My Bookings</NavLink>
+                <NavLink to="/resident/favourites" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Favourites</NavLink>
+                <NavLink to="/resident/reviews" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>My Reviews</NavLink>
+                <NavLink to="/resident/profile" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Profile</NavLink>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

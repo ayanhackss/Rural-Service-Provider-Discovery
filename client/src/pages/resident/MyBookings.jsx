@@ -95,16 +95,51 @@ export default function MyBookings() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {bookings.map((b) => (
                 <div key={b._id} className="card" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 'var(--space-4)', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)', borderBottom: '1px solid var(--color-rule)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                        <CalendarDays size={16} style={{ color: 'var(--color-muted)' }} />
-                        <span className="label">{new Date(b.date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)' }}>
+                      <div>
+                        <h3 style={{ fontStyle: 'italic', marginBottom: 'var(--space-1)' }}>{b.serviceId?.title}</h3>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-muted)', fontSize: 'var(--text-sm)' }}>
+                          <User size={14} /> {b.providerId?.name}
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                        <User size={16} style={{ color: 'var(--color-muted)' }} />
-                        <span className="label" style={{ fontWeight: 400 }}>{b.providerId?.name}</span>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontWeight: 600 }}>
+                          <CalendarDays size={16} color="var(--color-accent)" />
+                          {new Date(b.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Status Timeline */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: 'var(--space-6)' }}>
+                      {['pending', 'confirmed', 'completed'].map((step, idx) => {
+                        const statuses = ['pending', 'confirmed', 'completed'];
+                        const currentIdx = statuses.indexOf(b.status === 'cancelled' ? 'pending' : b.status);
+                        const isPast = idx <= currentIdx;
+                        const isCurrent = idx === currentIdx;
+                        const isCancelled = b.status === 'cancelled' && idx === 0;
+
+                        return (
+                          <div key={step} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                            <div style={{ 
+                              height: '4px', 
+                              backgroundColor: isCancelled ? 'var(--color-error)' : isPast ? 'var(--color-accent)' : 'var(--color-border)',
+                              borderRadius: '2px',
+                              opacity: isPast ? 1 : 0.3
+                            }}></div>
+                            <span style={{ 
+                              fontSize: '10px', 
+                              textTransform: 'uppercase', 
+                              letterSpacing: '0.05em',
+                              fontWeight: isCurrent ? 700 : 400,
+                              color: isCancelled ? 'var(--color-error)' : isPast ? 'var(--color-text)' : 'var(--color-muted)' 
+                            }}>
+                              {isCancelled ? 'Cancelled' : step}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 

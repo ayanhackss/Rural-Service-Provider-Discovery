@@ -117,4 +117,93 @@ router.get('/bookings', async (req, res, next) => {
   }
 });
 
+// PATCH /api/admin/bookings/:id/cancel
+router.patch('/bookings/:id/cancel', async (req, res, next) => {
+  try {
+    const booking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { status: 'cancelled' },
+      { new: true }
+    );
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    res.json({ booking });
+  } catch (err) { next(err); }
+});
+
+// GET /api/admin/reviews — all reviews with optional delete
+const Review = require('../models/Review');
+router.get('/reviews', async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const [reviews, total] = await Promise.all([
+      Review.find()
+        .populate('residentId', 'name email')
+        .populate('serviceId', 'title category')
+        .skip(skip).limit(Number(limit)).sort({ createdAt: -1 }),
+      Review.countDocuments(),
+    ]);
+    res.json({ reviews, total });
+  } catch (err) { next(err); }
+});
+
+router.delete('/reviews/:id', async (req, res, next) => {
+  try {
+    await Review.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Review deleted' });
+  } catch (err) { next(err); }
+});
+
+// GET /api/admin/analytics
+router.get('/analytics', async (req, res, next) => {
+  try {
+    const [byCategory, topProviders, recentBookings] = await Promise.all([
+      Booking.aggregate([
+        { $lookup: { from: 'services', localField: 'serviceId', foreignField: '_id', as: 'service' } },
+        { $unwind: '$service' },
+        { $group: { _id: '$service.category', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+      ]),
+      User.find({ role: 'provider', isApproved: true })
+        .select('name averageRating totalBookings location')
+        .sort({ totalBookings: -1 })
+        .limit(5),
+      Booking.countDocuments({
+        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+      }),
+    ]);
+    res.json({ byCategory, topProviders, recentBookings });
+  } catch (err) { next(err); }
+});
+
+// Announcements — in-memory for now (stored in DB via a simple collection)
+const announcementSchema = new (require('mongoose').Schema)(
+  { title: String, body: String, createdBy: String },
+  { timestamps: true }
+);
+const Announcement = require('mongoose').models.Announcement ||
+  require('mongoose').model('Announcement', announcementSchema);
+
+router.get('/announcements', async (req, res, next) => {
+  try {
+    const announcements = await Announcement.find().sort({ createdAt: -1 }).limit(20);
+    res.json({ announcements });
+  } catch (err) { next(err); }
+});
+
+router.post('/announcements', async (req, res, next) => {
+  try {
+    const { title, body } = req.body;
+    const a = await Announcement.create({ title, body, createdBy: req.user.name });
+    res.status(201).json({ announcement: a });
+  } catch (err) { next(err); }
+});
+
+router.delete('/announcements/:id', async (req, res, next) => {
+  try {
+    await Announcement.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Deleted' });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;

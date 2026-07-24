@@ -12,12 +12,15 @@ const userSchema = new mongoose.Schema(
       village: { type: String, trim: true },
       pinCode: { type: String, trim: true },
     },
+    bio: { type: String, trim: true },
     // Provider-specific fields
     isApproved: { type: Boolean, default: false },   // admin must approve providers
     isSuspended: { type: Boolean, default: false },
     // Provider profile summary (computed / cached)
     averageRating: { type: Number, default: 0 },
     totalBookings: { type: Number, default: 0 },
+    // Resident favourites
+    favourites: [{ type: require('mongoose').Schema.Types.ObjectId, ref: 'Service' }],
   },
   { timestamps: true }
 );

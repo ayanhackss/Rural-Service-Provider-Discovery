@@ -108,11 +108,7 @@ export default function ManageListings() {
             )}
           </div>
 
-          {/* Sidebar navigation for provider */}
-          <div style={{ display: 'flex', gap: 'var(--space-3)', marginBottom: 'var(--space-8)', borderBottom: '1px solid var(--color-rule)', paddingBottom: 'var(--space-4)' }}>
-            <span className="btn btn-primary btn-sm">Listings</span>
-            <Link to="/provider/bookings" className="btn btn-ghost btn-sm">Bookings</Link>
-          </div>
+
 
           {loading ? (
             <Loader />
