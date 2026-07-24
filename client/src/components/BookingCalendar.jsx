@@ -57,13 +57,12 @@ export default function BookingCalendar({ service, onSlotSelect, selectedDate, s
       {/* Horizontal Date Scroller */}
       <div 
         ref={scrollRef}
+        className="date-scroller"
         style={{
           display: 'flex',
           overflowX: 'auto',
           gap: 'var(--space-3)',
           paddingBottom: 'var(--space-4)',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
         }}
       >
         {dates.map((d) => {

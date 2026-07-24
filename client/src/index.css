@@ -1026,3 +1026,23 @@ tr:hover td { background: var(--color-paper-2); }
     radial-gradient(at 100% 100%, rgba(78, 205, 196, 0.05) 0px, transparent 50%);
   background-size: 100% 100%;
 }
+
+/* ─── SCROLLBARS ─────────────────────────────────────────── */
+.date-scroller::-webkit-scrollbar {
+  height: 6px;
+}
+.date-scroller::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+.date-scroller::-webkit-scrollbar-thumb {
+  background: var(--color-rule);
+  border-radius: 4px;
+}
+.date-scroller::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+.date-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-rule) transparent;
+}
