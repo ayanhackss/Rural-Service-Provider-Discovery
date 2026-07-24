@@ -110,17 +110,17 @@ export default function ServiceDetail() {
         {/* ── MAIN CONTENT GRID ── */}
         <section className="section" style={{ paddingTop: 'var(--space-12)' }}>
           <div className="container">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 'var(--space-12)', alignItems: 'start' }}>
+            <div className="service-layout">
               
               {/* Left — Details & Reviews */}
               <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
                 
                 {/* About Provider Profile Card */}
-                <div className="card" style={{ marginBottom: 'var(--space-10)', display: 'flex', gap: 'var(--space-6)', alignItems: 'center', background: 'var(--color-paper)', padding: 'var(--space-6)', border: '1px solid var(--color-rule)' }}>
+                <div className="card provider-card-layout" style={{ marginBottom: 'var(--space-10)', background: 'var(--color-paper)', padding: 'var(--space-6)', border: '1px solid var(--color-rule)' }}>
                   <Avatar name={provider?.name} size={80} />
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: 'var(--text-xl)', fontStyle: 'italic', marginBottom: 'var(--space-2)' }}>{provider?.name}</h3>
-                    <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
+                    <div className="provider-card-contact">
                       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-ink-dim)', fontSize: 'var(--text-sm)' }}>
                         <MapPin size={16} />
                         {provider?.location?.village} {provider?.location?.pinCode && `(${provider.location.pinCode})`}
@@ -131,7 +131,7 @@ export default function ServiceDetail() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'center', paddingLeft: 'var(--space-6)', borderLeft: '1px solid var(--color-rule)' }}>
+                  <div className="provider-card-stats">
                     <div style={{ fontFamily: 'var(--font-outlier)', fontSize: 'var(--text-2xl)', color: 'var(--color-ink)', lineHeight: 1 }}>
                       {provider?.totalBookings || 0}
                     </div>

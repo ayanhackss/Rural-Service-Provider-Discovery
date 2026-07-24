@@ -1023,3 +1023,92 @@ tr:hover td { background: var(--color-paper-2); }
     radial-gradient(at 100% 100%, rgba(78, 205, 196, 0.05) 0px, transparent 50%);
   background-size: 100% 100%;
 }
+
+/* ─── RESPONSIVE LAYOUTS ─────────────────────────────────── */
+.service-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--space-12);
+  align-items: start;
+}
+.provider-card-layout {
+  display: flex;
+  gap: var(--space-6);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.provider-card-stats {
+  text-align: center;
+  padding-left: var(--space-6);
+  border-left: 1px solid var(--color-rule);
+}
+.provider-card-contact {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .service-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .provider-card-layout {
+    flex-direction: column;
+    text-align: center;
+  }
+  .provider-card-stats {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--color-rule);
+    padding-top: var(--space-4);
+    width: 100%;
+  }
+  .provider-card-contact {
+    justify-content: center;
+  }
+  
+  :root {
+    --text-display: clamp(2.25rem, 6vw + 0.5rem, 4rem);
+  }
+}
+
+/* ─── HOME HERO RESPONSIVE ───────────────────────────────── */
+.hero-section {
+  padding-top: var(--space-3xl);
+  padding-bottom: var(--space-12);
+}
+.hero-buttons {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  padding: var(--space-8) 0;
+  justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-8);
+  }
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-buttons .btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  .stats-container {
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+}

@@ -40,7 +40,7 @@ export default function Home() {
       <Navbar />
       <main>
         {/* ── HERO ── */}
-        <section className="section mesh-bg" style={{ paddingTop: 'var(--space-3xl)', paddingBottom: 'var(--space-12)' }}>
+        <section className="section mesh-bg hero-section">
           <div className="container">
             <div style={{ maxWidth: '800px' }}>
               <p className="label fade-in-up" style={{ color: 'var(--color-accent)', marginBottom: 'var(--space-4)', animationDelay: '0.1s' }}>
@@ -53,7 +53,7 @@ export default function Home() {
                 GraamSeva connects rural residents with verified local providers — plumbers, electricians, tutors, and more — with real bookings and real reviews.
               </p>
               
-              <div className="fade-in-up" style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', animationDelay: '0.4s' }}>
+              <div className="fade-in-up hero-buttons" style={{ animationDelay: '0.4s' }}>
                 <Link to="/services" className="btn btn-primary">
                   Find a service
                 </Link>
@@ -75,7 +75,7 @@ export default function Home() {
         {/* ── COMMUNITY IMPACT STATS ── */}
         <section style={{ background: 'var(--color-paper-2)', borderTop: '1px solid var(--color-rule)', borderBottom: '1px solid var(--color-rule)' }}>
           <div className="container">
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-8)', padding: 'var(--space-8) 0', justifyContent: 'space-between' }}>
+            <div className="stats-container">
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
                 <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--color-paper)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-rule)' }}>
                   <Users size={24} style={{ color: 'var(--color-accent)' }} />
