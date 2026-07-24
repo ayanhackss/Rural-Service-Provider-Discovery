@@ -12,12 +12,21 @@ const bookingRoutes = require('./routes/bookings');
 const reviewRoutes = require('./routes/reviews');
 const adminRoutes = require('./routes/admin');
 
-// Connect to database
+// Connect to database (cached — safe for serverless and long-running)
 connectDB();
 
 const app = express();
 
-// Middleware — on Vercel, same domain so CORS is open; locally use env var or localhost
+// Middleware — ensure DB is connected before every request (handles serverless cold starts)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(503).json({ message: 'Database unavailable. Please try again.' });
+  }
+});
+
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN
     ? process.env.CLIENT_ORIGIN.split(',')
