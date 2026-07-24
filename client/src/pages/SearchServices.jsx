@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { getServices, getCategories } from '../api/services';
 import Navbar from '../components/Navbar';
 import ServiceCard from '../components/ServiceCard';
+import Tilt from 'react-parallax-tilt';
 import Loader from '../components/Loader';
 import { Search } from 'lucide-react';
 
@@ -128,10 +129,13 @@ export default function SearchServices() {
               <p>Try adjusting your filters or search term.</p>
             </div>
           ) : (
-            <div className="grid-3" style={{ marginBottom: 'var(--space-3xl)' }}>
-              {services.map((s) => <ServiceCard key={s._id} service={s} />)}
-            </div>
-          )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-6)' }}>
+              {services.map(service => (
+                <Tilt key={service._id} tiltMaxAngleX={5} tiltMaxAngleY={5} scale={1.02} transitionSpeed={2500}>
+                  <ServiceCard service={service} />
+                </Tilt>
+              ))}
+            </div>)}
         </div>
       </main>
     </>

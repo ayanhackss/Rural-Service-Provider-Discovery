@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import ServiceCard from '../components/ServiceCard';
+import Tilt from 'react-parallax-tilt';
 import { getPublicStats, getServices } from '../api/services';
 import { Wrench, Zap, BookOpen, Stethoscope, Hammer, Settings, Wheat, Paintbrush, Search, MapPin, Users, CheckCircle, TrendingUp, ArrowRight } from 'lucide-react';
 
@@ -39,7 +40,7 @@ export default function Home() {
       <Navbar />
       <main>
         {/* ── HERO ── */}
-        <section className="section" style={{ paddingTop: 'var(--space-3xl)', paddingBottom: 'var(--space-12)' }}>
+        <section className="section mesh-bg" style={{ paddingTop: 'var(--space-3xl)', paddingBottom: 'var(--space-12)' }}>
           <div className="container">
             <div style={{ maxWidth: '800px' }}>
               <p className="label fade-in-up" style={{ color: 'var(--color-accent)', marginBottom: 'var(--space-4)', animationDelay: '0.1s' }}>
@@ -152,7 +153,9 @@ export default function Home() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-6)' }}>
                 {topRated.map(service => (
-                  <ServiceCard key={service._id} service={service} />
+                  <Tilt key={service._id} tiltMaxAngleX={5} tiltMaxAngleY={5} scale={1.02} transitionSpeed={2500}>
+                    <ServiceCard service={service} />
+                  </Tilt>
                 ))}
               </div>
             </div>

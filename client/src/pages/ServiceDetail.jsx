@@ -9,6 +9,7 @@ import Navbar from '../components/Navbar';
 import BookingCalendar from '../components/BookingCalendar';
 import StarRating from '../components/StarRating';
 import Skeleton from '../components/Skeleton';
+import Avatar from '../components/Avatar';
 import { MapPin, Phone, MessageSquare, CheckCircle, User, Star } from 'lucide-react';
 
 export default function ServiceDetail() {
@@ -116,9 +117,7 @@ export default function ServiceDetail() {
                 
                 {/* About Provider Profile Card */}
                 <div className="card" style={{ marginBottom: 'var(--space-10)', display: 'flex', gap: 'var(--space-6)', alignItems: 'center', background: 'var(--color-paper)', padding: 'var(--space-6)', border: '1px solid var(--color-rule)' }}>
-                  <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--color-paper-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--color-rule)' }}>
-                    <User size={32} style={{ color: 'var(--color-muted)' }} />
-                  </div>
+                  <Avatar name={provider?.name} size={80} />
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: 'var(--text-xl)', fontStyle: 'italic', marginBottom: 'var(--space-2)' }}>{provider?.name}</h3>
                     <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
@@ -168,9 +167,7 @@ export default function ServiceDetail() {
                         <div key={r._id} className="card hover-lift" style={{ padding: 'var(--space-6)', border: '1px solid var(--color-rule)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--color-paper-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <User size={16} style={{ color: 'var(--color-muted)' }} />
-                              </div>
+                              <Avatar name={r.residentId?.name} size={32} />
                               <span style={{ fontWeight: 500 }}>{r.residentId?.name || 'Resident'}</span>
                             </div>
                             <StarRating rating={r.rating} size="sm" />

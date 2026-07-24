@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Moon, Sun } from 'lucide-react';
+import Avatar from './Avatar';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -62,15 +63,20 @@ export default function Navbar() {
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             {user ? (
-              <>
-                <span className="label" style={{ color: 'var(--color-muted)' }}>
-                  {user.name.split(' ')[0]}
-                </span>
-                <span className={`badge badge-${user.role}`}>{user.role}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  <Avatar name={user.name} size={32} />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <span className="label" style={{ color: 'var(--color-ink)', fontWeight: 600 }}>
+                      {user.name.split(' ')[0]}
+                    </span>
+                    <span className={`badge badge-${user.role}`} style={{ fontSize: '0.6rem', padding: '0px 4px' }}>{user.role}</span>
+                  </div>
+                </div>
                 <button className="btn btn-outline btn-sm" onClick={handleLogout}>
                   Sign out
                 </button>
-              </>
+              </div>
             ) : (
               <>
                 <Link to="/login" className="btn btn-ghost btn-sm">Sign in</Link>
