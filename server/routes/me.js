@@ -32,7 +32,6 @@ router.patch('/profile', async (req, res, next) => {
     // Password change
     if (newPassword) {
       if (!currentPassword) return res.status(400).json({ message: 'Current password required' });
-      const bcrypt = require('bcryptjs');
       const valid = await bcrypt.compare(currentPassword, user.passwordHash);
       if (!valid) return res.status(401).json({ message: 'Current password incorrect' });
       user.passwordHash = await bcrypt.hash(newPassword, 12);
