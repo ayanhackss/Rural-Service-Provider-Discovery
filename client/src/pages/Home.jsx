@@ -223,27 +223,6 @@ export default function Home() {
           </section>
         )}
 
-        {/* ── FOOTER ── */}
-        <footer className="footer">
-          <div className="container">
-            <div className="footer__inner">
-              <div className="footer__top">
-                <div>
-                  <div className="footer__brand">GraamSeva</div>
-                  <p className="footer__tagline">Connecting rural communities with trusted local services.</p>
-                </div>
-                <div className="footer__links">
-                  <Link to="/services">Find Services</Link>
-                  <Link to="/register">Become a Provider</Link>
-                  <Link to="/login">Sign in</Link>
-                </div>
-              </div>
-              <div className="footer__bottom">
-                <span className="footer__copy">© {new Date().getFullYear()} GraamSeva. Built with MERN stack.</span>
-              </div>
-            </div>
-          </div>
-        </footer>
       </main>
     </>
   );

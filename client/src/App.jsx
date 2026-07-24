@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AnimatePresence } from 'framer-motion';
 import ProtectedRoute from './components/ProtectedRoute';
 import BottomNav from './components/BottomNav';
+import Footer from './components/Footer';
 import PageTransition from './components/PageTransition';
 
 // Pages
@@ -83,6 +84,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <AnimatedRoutes />
+        <Footer />
         <BottomNav />
         <Toaster position="bottom-right" toastOptions={{ className: 'card', style: { borderRadius: 'var(--radius-sm)', background: 'var(--color-paper-2)', color: 'var(--color-ink)', border: '1px solid var(--color-rule)' } }} />
       </AuthProvider>

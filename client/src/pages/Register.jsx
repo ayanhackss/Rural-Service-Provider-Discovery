@@ -63,7 +63,7 @@ export default function Register() {
                   padding: 'var(--space-4)',
                   border: `1px solid ${form.role === r.value ? 'var(--color-accent)' : 'var(--color-rule)'}`,
                   borderRadius: 'var(--radius-sm)',
-                  background: form.role === r.value ? 'oklch(72% 0.18 80 / 0.10)' : 'var(--color-paper-2)',
+                  background: form.role === r.value ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)' : 'var(--color-paper-2)',
                   textAlign: 'left',
                   cursor: 'pointer',
                   transition: 'all 0.15s',

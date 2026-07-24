@@ -341,7 +341,7 @@ h4 { font-size: var(--text-lg); }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: oklch(13% 0.010 80 / 0.92);
+  background: color-mix(in srgb, var(--color-paper) 92%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-rule);
@@ -672,7 +672,7 @@ th {
 
 td {
   padding: var(--space-4);
-  border-bottom: 1px solid oklch(30% 0.010 75 / 0.5);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-rule) 50%, transparent);
   color: var(--color-ink-dim);
   vertical-align: middle;
 }
@@ -685,7 +685,7 @@ tr:hover td { background: var(--color-paper-2); }
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: oklch(8% 0.005 80 / 0.8);
+  background: color-mix(in srgb, oklch(8% 0.005 80) 80%, transparent);
   backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
@@ -960,15 +960,12 @@ tr:hover td { background: var(--color-paper-2); }
   bottom: 0;
   left: 0;
   right: 0;
-  background: oklch(13% 0.010 80 / 0.95);
+  background: color-mix(in srgb, var(--color-paper) 95%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--color-rule);
   z-index: 1000;
   padding: env(safe-area-inset-bottom, 0) 0 0 0;
-}
-[data-theme="dark"] .bottom-nav {
-  background: oklch(18% 0.010 240 / 0.95);
 }
 
 @media (max-width: 768px) {
