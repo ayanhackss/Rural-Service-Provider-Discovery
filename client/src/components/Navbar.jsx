@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Menu, X } from 'lucide-react';
 import Avatar from './Avatar';
 
 export default function Navbar() {
@@ -34,8 +34,9 @@ export default function Navbar() {
     : '/resident/bookings';
 
   return (
-    <nav className="navbar" role="navigation" aria-label="Main navigation">
-      <div className="container">
+    <>
+      <nav className="navbar" role="navigation" aria-label="Main navigation">
+        <div className="container">
         <div className="navbar__inner">
           <Link to="/" className="navbar__brand">
             Graam<span>Seva</span>
@@ -87,43 +88,74 @@ export default function Navbar() {
 
           {/* Mobile toggle */}
           <button
-            className="navbar__menu-toggle"
+            className="navbar__menu-toggle btn btn-ghost"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
+            style={{ padding: 'var(--space-2)' }}
           >
-            <span />
-            <span />
-            <span />
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* Mobile menu */}
-        <div className={`navbar__mobile-menu${menuOpen ? ' open' : ''}`}>
-          <NavLink to="/services" className="navbar__link" onClick={() => setMenuOpen(false)}>
+        </div>
+      </nav>
+
+      {/* Mobile menu overlay */}
+      <div 
+        className={`navbar__overlay${menuOpen ? ' open' : ''}`} 
+        onClick={() => setMenuOpen(false)} 
+      />
+
+      {/* Mobile menu */}
+      <div className={`navbar__mobile-menu${menuOpen ? ' open' : ''}`}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-6)' }}>
+          <Link to="/" className="navbar__brand" onClick={() => setMenuOpen(false)}>
+            Graam<span>Seva</span>
+          </Link>
+          <button className="btn btn-ghost" onClick={() => setMenuOpen(false)} style={{ padding: 'var(--space-2)' }}>
+            <X size={24} />
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', flex: 1 }}>
+          <NavLink to="/services" className="navbar__link" onClick={() => setMenuOpen(false)} style={{ fontSize: 'var(--text-lg)' }}>
             Find Services
           </NavLink>
           {user && (
-            <NavLink to={dashboardPath} className="navbar__link" onClick={() => setMenuOpen(false)}>
+            <NavLink to={dashboardPath} className="navbar__link" onClick={() => setMenuOpen(false)} style={{ fontSize: 'var(--text-lg)' }}>
               Dashboard
             </NavLink>
           )}
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', marginTop: 'auto', paddingTop: 'var(--space-6)', borderTop: '1px solid var(--color-rule)' }}>
+          <button 
+            className="btn btn-ghost" 
+            onClick={() => { setIsDark(!isDark); }}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}
+          >
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            {isDark ? 'Light Mode' : 'Dark Mode'}
+          </button>
+          
           {user ? (
-            <button className="btn btn-outline btn-sm" onClick={handleLogout} style={{ alignSelf: 'flex-start' }}>
+            <button className="btn btn-outline" onClick={handleLogout} style={{ width: '100%' }}>
               Sign out
             </button>
           ) : (
-            <>
-              <Link to="/login" className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(false)} style={{ alignSelf: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+              <Link to="/login" className="btn btn-ghost" onClick={() => setMenuOpen(false)} style={{ width: '100%' }}>
                 Sign in
               </Link>
-              <Link to="/register" className="btn btn-primary btn-sm" onClick={() => setMenuOpen(false)} style={{ alignSelf: 'flex-start' }}>
+              <Link to="/register" className="btn btn-primary" onClick={() => setMenuOpen(false)} style={{ width: '100%' }}>
                 Join free
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>
+
 
       {/* Secondary Sub-Navbar for Dashboards */}
       {user && location.pathname.startsWith(`/${user.role === 'resident' ? 'resident' : user.role}`) && (
@@ -161,6 +193,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }

@@ -41,32 +41,36 @@ export default function Home() {
       <main>
         {/* ── HERO ── */}
         <section className="section mesh-bg hero-section">
-          <div className="container">
-            <div style={{ maxWidth: '800px' }}>
-              <p className="label fade-in-up" style={{ color: 'var(--color-accent)', marginBottom: 'var(--space-4)', animationDelay: '0.1s' }}>
-                Rural Service Discovery
-              </p>
+          <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <div style={{ maxWidth: '700px' }}>
+              <div className="label fade-in-up" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', background: 'oklch(72% 0.18 80 / 0.15)', color: 'var(--color-accent)', padding: 'var(--space-2) var(--space-4)', borderRadius: '999px', marginBottom: 'var(--space-6)', animationDelay: '0.1s' }}>
+                ✨ Your local service network
+              </div>
               <h1 className="display fade-in-up" style={{ marginBottom: 'var(--space-6)', lineHeight: 1.1, animationDelay: '0.2s' }}>
-                Trusted services,<br />found in your village.
+                Find trusted services,<br />right in your village.
               </h1>
-              <p className="fade-in-up" style={{ fontSize: 'var(--text-lg)', color: 'var(--color-ink-dim)', maxWidth: '55ch', lineHeight: 1.6, marginBottom: 'var(--space-8)', animationDelay: '0.3s' }}>
-                GraamSeva connects rural residents with verified local providers — plumbers, electricians, tutors, and more — with real bookings and real reviews.
+              <p className="fade-in-up" style={{ fontSize: 'var(--text-lg)', color: 'var(--color-ink-dim)', maxWidth: '55ch', margin: '0 auto var(--space-10) auto', lineHeight: 1.6, animationDelay: '0.3s' }}>
+                Skip the waiting. Connect instantly with verified local plumbers, electricians, and tutors backed by community reviews.
               </p>
               
-              <div className="fade-in-up hero-buttons" style={{ animationDelay: '0.4s' }}>
-                <Link to="/services" className="btn btn-primary">
-                  Find a service
+              <div className="fade-in-up" style={{ animationDelay: '0.4s', width: '100%' }}>
+                <Link to="/services" className="search-mock">
+                  <Search size={20} />
+                  <span>What service do you need?</span>
+                  <div className="search-mock-btn">Search</div>
                 </Link>
-                {!user && (
-                  <Link to="/register" className="btn btn-outline">
-                    Register as Provider
-                  </Link>
-                )}
-                {user?.role === 'provider' && (
-                  <Link to="/provider/listings" className="btn btn-outline">
-                    My Dashboard
-                  </Link>
-                )}
+
+                <div style={{ marginTop: 'var(--space-8)' }}>
+                  {!user ? (
+                    <Link to="/register" style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                      Are you a professional? <span style={{ color: 'var(--color-accent)' }}>Join as Provider &rarr;</span>
+                    </Link>
+                  ) : user.role === 'provider' ? (
+                    <Link to="/provider/listings" style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                      Manage your profile <span style={{ color: 'var(--color-accent)' }}>Go to Dashboard &rarr;</span>
+                    </Link>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
