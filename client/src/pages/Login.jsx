@@ -28,7 +28,11 @@ export default function Login() {
         : from === '/' ? '/services' : from;
       navigate(dest, { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      const serverMsg = err.response?.data?.message 
+        || (typeof err.response?.data === 'string' && err.response.data.trim() ? err.response.data.trim().slice(0, 120) : null);
+      const statusInfo = err.response?.status ? `(Status: ${err.response.status})` : '';
+      const fallbackMsg = err.message || 'Unable to connect to server';
+      setError(`${serverMsg || fallbackMsg} ${statusInfo}`.trim());
     } finally {
       setLoading(false);
     }
