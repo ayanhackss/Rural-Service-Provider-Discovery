@@ -13,6 +13,15 @@ const bookingSchema = new mongoose.Schema(
       default: 'pending',
     },
     notes: { type: String }, // optional message from resident
+    completionOtp: {
+      type: String,
+      default: () => Math.floor(1000 + Math.random() * 9000).toString(),
+    },
+    cancellationReason: { type: String, trim: true },
+    cancelledBy: {
+      type: String,
+      enum: ['resident', 'provider', 'admin'],
+    },
     // In-app notification flags
     providerNotified: { type: Boolean, default: false },
     residentNotified: { type: Boolean, default: false },

@@ -74,6 +74,7 @@ router.get('/provider', verifyToken, requireRole('provider'), async (req, res, n
     if (status) filter.status = status;
 
     const bookings = await Booking.find(filter)
+      .select('-completionOtp') // Security: Keep OTP hidden from provider until entered
       .populate('serviceId', 'title category')
       .populate('residentId', 'name phone location')
       .sort({ date: -1 });
@@ -108,7 +109,7 @@ router.get('/notifications', verifyToken, async (req, res, next) => {
 // PATCH /api/bookings/:id/status — update booking status
 router.patch('/:id/status', verifyToken, async (req, res, next) => {
   try {
-    const { status } = req.body;
+    const { status, otp, cancellationReason } = req.body;
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
@@ -133,6 +134,28 @@ router.patch('/:id/status', verifyToken, async (req, res, next) => {
       return res.status(400).json({ message: `Cannot move from ${booking.status} → ${status}` });
     }
 
+    // Verify 4-digit OTP when completing job (required for provider)
+    if (status === 'completed' && isProvider) {
+      if (!otp) {
+        return res.status(400).json({ message: 'Please provide the 4-digit Job Completion OTP given by the customer.' });
+      }
+      
+      const enteredOtp = String(otp).trim();
+      const expectedOtp = String(booking.completionOtp || '').trim();
+
+      if (expectedOtp && enteredOtp !== expectedOtp) {
+        return res.status(400).json({ message: 'Invalid 4-digit Completion OTP. Please check the code with the customer.' });
+      }
+    }
+
+    // Handle cancellation reason and attribution
+    if (status === 'cancelled') {
+      booking.cancellationReason = (cancellationReason && cancellationReason.trim()) 
+        ? cancellationReason.trim() 
+        : `Cancelled by ${role}`;
+      booking.cancelledBy = role;
+    }
+
     booking.status = status;
 
     // Notify the other party
@@ -141,7 +164,7 @@ router.patch('/:id/status', verifyToken, async (req, res, next) => {
 
     await booking.save();
 
-    // Update total bookings on provider and service when completed
+    // Update total bookings on provider when completed
     if (status === 'completed') {
       await User.findByIdAndUpdate(booking.providerId, { $inc: { totalBookings: 1 } });
     }

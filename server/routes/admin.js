@@ -120,9 +120,14 @@ router.get('/bookings', async (req, res, next) => {
 // PATCH /api/admin/bookings/:id/cancel
 router.patch('/bookings/:id/cancel', async (req, res, next) => {
   try {
+    const { cancellationReason } = req.body;
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { status: 'cancelled' },
+      { 
+        status: 'cancelled',
+        cancellationReason: cancellationReason || 'Cancelled by Admin',
+        cancelledBy: 'admin'
+      },
       { new: true }
     );
     if (!booking) return res.status(404).json({ message: 'Booking not found' });

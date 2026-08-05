@@ -7,9 +7,18 @@ import Navbar from '../../components/Navbar';
 import StarRating from '../../components/StarRating';
 import Skeleton from '../../components/Skeleton';
 import EmptyState from '../../components/EmptyState';
-import { CalendarX, CalendarDays, User } from 'lucide-react';
+import { CalendarX, CalendarDays, User, KeyRound, AlertCircle, XCircle } from 'lucide-react';
 
 const STATUSES = ['', 'pending', 'confirmed', 'completed', 'cancelled'];
+
+const RESIDENT_CANCEL_REASONS = [
+  'Found another provider / alternative',
+  'Changed mind / No longer needed',
+  'Emergency / Need to reschedule date',
+  'Provider not responsive',
+  'Price or service terms issue',
+  'Other reason'
+];
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -18,6 +27,12 @@ export default function MyBookings() {
   const [reviewModal, setReviewModal] = useState(null); // { booking }
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState('');
+
+  // Cancellation Modal state
+  const [cancelModalBooking, setCancelModalBooking] = useState(null);
+  const [cancelReason, setCancelReason] = useState(RESIDENT_CANCEL_REASONS[0]);
+  const [customCancelReason, setCustomCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -32,14 +47,31 @@ export default function MyBookings() {
 
   useEffect(() => { fetchBookings(); }, [tab]);
 
-  const handleCancel = async (id) => {
-    if (!window.confirm('Cancel this booking?')) return;
+  const openCancelModal = (booking) => {
+    setCancelModalBooking(booking);
+    setCancelReason(RESIDENT_CANCEL_REASONS[0]);
+    setCustomCancelReason('');
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!cancelModalBooking) return;
+    setCancelling(true);
     try {
-      await updateBookingStatus(id, 'cancelled');
-      toast.success('Booking cancelled');
+      const finalReason = cancelReason === 'Other reason' && customCancelReason.trim()
+        ? customCancelReason.trim()
+        : cancelReason;
+
+      await updateBookingStatus(cancelModalBooking._id, {
+        status: 'cancelled',
+        cancellationReason: finalReason,
+      });
+      toast.success('Booking cancelled successfully');
+      setCancelModalBooking(null);
       fetchBookings();
     } catch (err) {
-      toast.error('Failed to cancel booking');
+      toast.error(err.response?.data?.message || 'Failed to cancel booking');
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -135,6 +167,68 @@ export default function MyBookings() {
                       )}
                     </div>
 
+                    {/* 4-Digit Job Completion OTP for Active/Confirmed Bookings */}
+                    {['pending', 'confirmed'].includes(b.status) && (
+                      <div style={{
+                        margin: 'var(--space-3) 0',
+                        padding: 'var(--space-3) var(--space-4)',
+                        background: 'oklch(65% 0.14 145 / 0.08)',
+                        border: '1px dashed oklch(65% 0.14 145 / 0.45)',
+                        borderRadius: 'var(--radius-md)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: 'var(--space-3)'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                          <KeyRound size={20} style={{ color: 'var(--color-success)' }} />
+                          <div>
+                            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-ink)' }}>
+                              Job Completion OTP
+                            </div>
+                            <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                              Share this 4-digit code with the provider only after service is completed
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{
+                          fontFamily: 'var(--font-outlier)',
+                          fontSize: '1.25rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.25em',
+                          padding: '4px 14px',
+                          background: 'var(--color-paper)',
+                          borderRadius: 'var(--radius-sm)',
+                          border: '1px solid var(--color-rule)',
+                          color: 'var(--color-success)'
+                        }}>
+                          {b.completionOtp || '••••'}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Cancellation Reason Display */}
+                    {b.status === 'cancelled' && (
+                      <div style={{
+                        margin: 'var(--space-3) 0',
+                        padding: 'var(--space-3) var(--space-4)',
+                        background: 'oklch(58% 0.20 25 / 0.08)',
+                        borderLeft: '3px solid var(--color-error)',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: 'var(--text-xs)',
+                        color: 'var(--color-ink)'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontWeight: 600, color: 'var(--color-error)', marginBottom: '2px' }}>
+                          <XCircle size={14} />
+                          Cancelled by {b.cancelledBy ? b.cancelledBy.charAt(0).toUpperCase() + b.cancelledBy.slice(1) : 'User'}
+                        </div>
+                        <div style={{ color: 'var(--color-ink-dim)', fontStyle: 'italic' }}>
+                          "{b.cancellationReason || 'No reason provided'}"
+                        </div>
+                      </div>
+                    )}
+
                     {/* Status Timeline */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: 'var(--space-2)' }}>
                       {['pending', 'confirmed', 'completed'].map((step, idx) => {
@@ -170,7 +264,7 @@ export default function MyBookings() {
                   {/* Actions Bar */}
                   <div className="booking-card__actions">
                     {['pending', 'confirmed'].includes(b.status) && (
-                      <button className="btn btn-outline btn-sm" onClick={() => handleCancel(b._id)} style={{ color: 'var(--color-error)', borderColor: 'var(--color-error)' }}>
+                      <button className="btn btn-outline btn-sm" onClick={() => openCancelModal(b)} style={{ color: 'var(--color-error)', borderColor: 'var(--color-error)' }}>
                         Cancel Booking
                       </button>
                     )}
@@ -188,6 +282,78 @@ export default function MyBookings() {
             </div>
           )}
         </div>
+
+        {/* Cancellation Modal */}
+        {cancelModalBooking && (
+          <div className="modal-overlay" onClick={() => !cancelling && setCancelModalBooking(null)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal__header">
+                <h2 style={{ fontSize: 'var(--text-xl)', fontStyle: 'italic', color: 'var(--color-error)' }}>Cancel Booking</h2>
+                <button className="btn btn-ghost btn-sm" disabled={cancelling} onClick={() => setCancelModalBooking(null)}>✕</button>
+              </div>
+              
+              <p className="muted" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
+                {cancelModalBooking.serviceId?.title} with {cancelModalBooking.providerId?.name}
+              </p>
+
+              <div style={{ marginBottom: 'var(--space-5)' }}>
+                <label className="form-label" style={{ display: 'block', marginBottom: 'var(--space-3)' }}>
+                  Reason for Cancellation
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                  {RESIDENT_CANCEL_REASONS.map((r) => (
+                    <label key={r} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-3)',
+                      padding: 'var(--space-2) var(--space-3)',
+                      background: cancelReason === r ? 'oklch(58% 0.20 25 / 0.1)' : 'var(--color-paper-3)',
+                      border: `1px solid ${cancelReason === r ? 'var(--color-error)' : 'var(--color-rule)'}`,
+                      borderRadius: 'var(--radius-sm)',
+                      cursor: 'pointer',
+                      fontSize: 'var(--text-sm)'
+                    }}>
+                      <input
+                        type="radio"
+                        name="cancelReason"
+                        checked={cancelReason === r}
+                        onChange={() => setCancelReason(r)}
+                      />
+                      <span>{r}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {cancelReason === 'Other reason' && (
+                <div className="form-group" style={{ marginBottom: 'var(--space-5)' }}>
+                  <label className="form-label">Please explain (optional)</label>
+                  <textarea
+                    className="form-textarea"
+                    rows={2}
+                    value={customCancelReason}
+                    onChange={(e) => setCustomCancelReason(e.target.value)}
+                    placeholder="Tell us what happened..."
+                  />
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+                <button className="btn btn-ghost btn-sm" disabled={cancelling} onClick={() => setCancelModalBooking(null)}>
+                  Keep Booking
+                </button>
+                <button 
+                  className="btn btn-sm" 
+                  disabled={cancelling}
+                  onClick={handleConfirmCancel}
+                  style={{ background: 'var(--color-error)', color: '#fff', borderColor: 'var(--color-error)' }}
+                >
+                  {cancelling ? 'Cancelling...' : 'Confirm Cancellation'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Review modal */}
         {reviewModal && (
