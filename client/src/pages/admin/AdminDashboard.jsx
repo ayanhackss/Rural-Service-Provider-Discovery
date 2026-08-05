@@ -56,7 +56,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Stat cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-12)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
             {STAT_CARDS.map((s) => (
               <div key={s.label} className="stat-card">
                 <div className="stat-card__value" style={s.accent ? { color: 'var(--color-accent)' } : {}}>
@@ -65,6 +65,44 @@ export default function AdminDashboard() {
                 <div className="stat-card__label">{s.label}</div>
               </div>
             ))}
+          </div>
+
+          {/* Quick Admin Actions Hub */}
+          <div style={{ marginBottom: 'var(--space-12)' }}>
+            <h2 style={{ fontStyle: 'italic', fontSize: 'var(--text-xl)', marginBottom: 'var(--space-4)' }}>
+              Administrative Operations Hub
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)' }}>
+              <Link to="/admin/providers" className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', textDecoration: 'none', transition: 'transform 0.15s ease' }}>
+                <h3 style={{ fontStyle: 'italic', fontSize: 'var(--text-base)', margin: 0, color: 'var(--color-ink)' }}>👷 Providers Control</h3>
+                <p className="muted" style={{ fontSize: 'var(--text-xs)', margin: 0 }}>Approve, suspend, reset passwords, or manage village provider profiles.</p>
+              </Link>
+
+              <Link to="/admin/services" className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', textDecoration: 'none', transition: 'transform 0.15s ease' }}>
+                <h3 style={{ fontStyle: 'italic', fontSize: 'var(--text-base)', margin: 0, color: 'var(--color-ink)' }}>🛠️ Service Catalog</h3>
+                <p className="muted" style={{ fontSize: 'var(--text-xs)', margin: 0 }}>Moderate {stats.totalServices} listings, toggle active status, review pricing and photos.</p>
+              </Link>
+
+              <Link to="/admin/residents" className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', textDecoration: 'none', transition: 'transform 0.15s ease' }}>
+                <h3 style={{ fontStyle: 'italic', fontSize: 'var(--text-base)', margin: 0, color: 'var(--color-ink)' }}>👥 Resident Users</h3>
+                <p className="muted" style={{ fontSize: 'var(--text-xs)', margin: 0 }}>Manage customer accounts, update roles, or assist with password recovery.</p>
+              </Link>
+
+              <Link to="/admin/bookings" className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', textDecoration: 'none', transition: 'transform 0.15s ease' }}>
+                <h3 style={{ fontStyle: 'italic', fontSize: 'var(--text-base)', margin: 0, color: 'var(--color-ink)' }}>📅 Work Orders & Bookings</h3>
+                <p className="muted" style={{ fontSize: 'var(--text-xs)', margin: 0 }}>Track {stats.totalBookings} customer appointments and emergency service requests.</p>
+              </Link>
+
+              <Link to="/admin/system" className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', textDecoration: 'none', transition: 'transform 0.15s ease', borderColor: 'var(--color-accent)' }}>
+                <h3 style={{ fontStyle: 'italic', fontSize: 'var(--text-base)', margin: 0, color: 'var(--color-accent)' }}>⚡ System Health & CSV Export</h3>
+                <p className="muted" style={{ fontSize: 'var(--text-xs)', margin: 0 }}>Live MongoDB Atlas telemetry, ping diagnostics, and 1-click spreadsheet report exports.</p>
+              </Link>
+
+              <Link to="/admin/analytics" className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', textDecoration: 'none', transition: 'transform 0.15s ease' }}>
+                <h3 style={{ fontStyle: 'italic', fontSize: 'var(--text-base)', margin: 0, color: 'var(--color-ink)' }}>📈 Analytics & Charts</h3>
+                <p className="muted" style={{ fontSize: 'var(--text-xs)', margin: 0 }}>Category demand distribution, top-rated providers, and booking volume trends.</p>
+              </Link>
+            </div>
           </div>
 
           {/* Pending approvals */}

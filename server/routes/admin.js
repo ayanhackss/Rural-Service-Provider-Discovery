@@ -176,34 +176,177 @@ router.get('/analytics', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// Announcements — in-memory for now (stored in DB via a simple collection)
-const announcementSchema = new (require('mongoose').Schema)(
-  { title: String, body: String, createdBy: String },
-  { timestamps: true }
-);
-const Announcement = require('mongoose').models.Announcement ||
-  require('mongoose').model('Announcement', announcementSchema);
-
-router.get('/announcements', async (req, res, next) => {
+// GET /api/admin/services — all services across providers with filters
+router.get('/services', async (req, res, next) => {
   try {
-    const announcements = await Announcement.find().sort({ createdAt: -1 }).limit(20);
-    res.json({ announcements });
-  } catch (err) { next(err); }
+    const { category, isActive, search, page = 1, limit = 20 } = req.query;
+    const filter = {};
+    if (category) filter.category = category;
+    if (isActive !== undefined) filter.isActive = isActive === 'true';
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const [services, total] = await Promise.all([
+      Service.find(filter)
+        .populate('providerId', 'name email phone location isApproved isSuspended')
+        .skip(skip)
+        .limit(Number(limit))
+        .sort({ createdAt: -1 }),
+      Service.countDocuments(filter),
+    ]);
+    res.json({ services, total });
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.post('/announcements', async (req, res, next) => {
+// PATCH /api/admin/services/:id/toggle — toggle service status
+router.patch('/services/:id/toggle', async (req, res, next) => {
   try {
-    const { title, body } = req.body;
-    const a = await Announcement.create({ title, body, createdBy: req.user.name });
-    res.status(201).json({ announcement: a });
-  } catch (err) { next(err); }
+    const { isActive } = req.body;
+    const service = await Service.findByIdAndUpdate(
+      req.params.id,
+      { isActive },
+      { new: true }
+    ).populate('providerId', 'name email');
+    if (!service) return res.status(404).json({ message: 'Service not found' });
+    res.json({ service });
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.delete('/announcements/:id', async (req, res, next) => {
+// DELETE /api/admin/services/:id — delete service
+router.delete('/services/:id', async (req, res, next) => {
   try {
-    await Announcement.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Deleted' });
-  } catch (err) { next(err); }
+    const service = await Service.findByIdAndDelete(req.params.id);
+    if (!service) return res.status(404).json({ message: 'Service not found' });
+    res.json({ message: 'Service successfully deleted' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PATCH /api/admin/users/:id/reset-password — admin reset user password
+const bcrypt = require('bcryptjs');
+router.patch('/users/:id/reset-password', async (req, res, next) => {
+  try {
+    const { newPassword = 'password123' } = req.body;
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { passwordHash },
+      { new: true }
+    ).select('-passwordHash');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ message: `Password reset to "${newPassword}" successfully`, user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PATCH /api/admin/users/:id/role — change user role
+router.patch('/users/:id/role', async (req, res, next) => {
+  try {
+    const { role } = req.body;
+    if (!['resident', 'provider', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role' });
+    }
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true }
+    ).select('-passwordHash');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ user });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/admin/users/:id — delete user
+router.delete('/users/:id', async (req, res, next) => {
+  try {
+    if (req.user._id.toString() === req.params.id) {
+      return res.status(400).json({ message: 'Cannot delete your own admin account' });
+    }
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    // Cleanup related services if provider
+    if (user.role === 'provider') {
+      await Service.deleteMany({ providerId: user._id });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/admin/system/health — live DB & platform telemetry
+const mongoose = require('mongoose');
+router.get('/system/health', async (req, res, next) => {
+  try {
+    const startTime = Date.now();
+    await mongoose.connection.db.admin().ping();
+    const pingLatencyMs = Date.now() - startTime;
+
+    const [userCount, serviceCount, bookingCount, reviewCount] = await Promise.all([
+      User.countDocuments(),
+      Service.countDocuments(),
+      Booking.countDocuments(),
+      Review.countDocuments(),
+    ]);
+
+    res.json({
+      status: 'healthy',
+      dbState: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+      dbName: mongoose.connection.name,
+      pingLatencyMs,
+      serverUptimeSec: Math.floor(process.uptime()),
+      nodeVersion: process.version,
+      counts: {
+        users: userCount,
+        services: serviceCount,
+        bookings: bookingCount,
+        reviews: reviewCount,
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/admin/export/:type — export data as CSV/JSON
+router.get('/export/:type', async (req, res, next) => {
+  try {
+    const { type } = req.params;
+    let data = [];
+    if (type === 'users') {
+      data = await User.find().select('-passwordHash').lean();
+    } else if (type === 'services') {
+      data = await Service.find().populate('providerId', 'name email location').lean();
+    } else if (type === 'bookings') {
+      data = await Booking.find()
+        .populate('serviceId', 'title category')
+        .populate('providerId', 'name email phone')
+        .populate('residentId', 'name email phone')
+        .lean();
+    } else if (type === 'reviews') {
+      data = await Review.find().populate('residentId', 'name').populate('serviceId', 'title').lean();
+    } else {
+      return res.status(400).json({ message: 'Invalid export type. Use users, services, bookings, or reviews' });
+    }
+
+    res.json({ type, count: data.length, data });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

@@ -32,11 +32,13 @@ import Availability from './pages/provider/Availability';
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ManageProviders from './pages/admin/ManageProviders';
+import ManageServices from './pages/admin/ManageServices';
 import AdminBookings from './pages/admin/ManageBookings';
 import ManageResidents from './pages/admin/ManageResidents';
 import ManageReviews from './pages/admin/ManageReviews';
 import Analytics from './pages/admin/Analytics';
 import Announcements from './pages/admin/Announcements';
+import SystemSettings from './pages/admin/SystemSettings';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -68,11 +70,13 @@ function AnimatedRoutes() {
         {/* Admin */}
         <Route path="/admin" element={<ProtectedRoute roles={['admin']}><PageTransition><AdminDashboard /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/providers" element={<ProtectedRoute roles={['admin']}><PageTransition><ManageProviders /></PageTransition></ProtectedRoute>} />
+        <Route path="/admin/services" element={<ProtectedRoute roles={['admin']}><PageTransition><ManageServices /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/bookings" element={<ProtectedRoute roles={['admin']}><PageTransition><AdminBookings /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/residents" element={<ProtectedRoute roles={['admin']}><PageTransition><ManageResidents /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/reviews" element={<ProtectedRoute roles={['admin']}><PageTransition><ManageReviews /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute roles={['admin']}><PageTransition><Analytics /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/announcements" element={<ProtectedRoute roles={['admin']}><PageTransition><Announcements /></PageTransition></ProtectedRoute>} />
+        <Route path="/admin/system" element={<ProtectedRoute roles={['admin']}><PageTransition><SystemSettings /></PageTransition></ProtectedRoute>} />
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />

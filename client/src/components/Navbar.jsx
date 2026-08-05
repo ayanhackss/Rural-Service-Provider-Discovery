@@ -166,10 +166,12 @@ export default function Navbar() {
                 <NavLink to="/admin" end className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Overview</NavLink>
                 <NavLink to="/admin/analytics" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Analytics</NavLink>
                 <NavLink to="/admin/providers" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Providers</NavLink>
+                <NavLink to="/admin/services" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Services</NavLink>
                 <NavLink to="/admin/residents" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Residents</NavLink>
                 <NavLink to="/admin/bookings" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Bookings</NavLink>
                 <NavLink to="/admin/reviews" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Reviews</NavLink>
                 <NavLink to="/admin/announcements" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>Announcements</NavLink>
+                <NavLink to="/admin/system" className={({ isActive }) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-ghost'}`}>System & Reports</NavLink>
               </>
             )}
             {user.role === 'provider' && (
