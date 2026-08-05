@@ -100,15 +100,16 @@ export default function ManageProviders() {
 
           {/* Filters Bar */}
           <div className="card" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-4)' }}>
-            <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
-              <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
-                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
+            <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
+                <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)', pointerEvents: 'none' }} />
                 <input
                   type="text"
+                  className="form-input"
                   placeholder="Search provider by name, email, village..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  style={{ paddingLeft: '38px', width: '100%' }}
+                  style={{ paddingLeft: '42px', width: '100%' }}
                 />
               </div>
 
@@ -116,7 +117,7 @@ export default function ManageProviders() {
                 className="form-select" 
                 value={filter.approved} 
                 onChange={(e) => setFilter({ ...filter, approved: e.target.value })} 
-                style={{ width: 'auto' }} 
+                style={{ width: 'auto', minWidth: '180px' }} 
                 aria-label="Approval status"
               >
                 <option value="">All Providers</option>

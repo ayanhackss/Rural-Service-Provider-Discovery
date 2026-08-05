@@ -90,22 +90,24 @@ export default function ManageServices() {
 
           {/* Filters Bar */}
           <div className="card" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-4)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)', alignItems: 'center' }}>
               {/* Search */}
               <div style={{ position: 'relative' }}>
-                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
+                <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)', pointerEvents: 'none' }} />
                 <input
                   type="text"
+                  className="form-input"
                   placeholder="Search service title or description..."
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                  style={{ paddingLeft: '38px', width: '100%' }}
+                  style={{ paddingLeft: '42px', width: '100%' }}
                 />
               </div>
 
               {/* Category */}
               <div>
                 <select
+                  className="form-select"
                   value={category}
                   onChange={(e) => { setCategory(e.target.value); setPage(1); }}
                   style={{ width: '100%' }}
@@ -117,6 +119,7 @@ export default function ManageServices() {
               {/* Status */}
               <div>
                 <select
+                  className="form-select"
                   value={statusFilter}
                   onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                   style={{ width: '100%' }}

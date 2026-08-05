@@ -113,13 +113,14 @@ export default function ManageResidents() {
           {/* Search Bar */}
           <div className="card" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-4)' }}>
             <div style={{ position: 'relative' }}>
-              <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)' }} />
+              <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-muted)', pointerEvents: 'none' }} />
               <input
                 type="text"
+                className="form-input"
                 placeholder="Search resident by name, email, or phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                style={{ paddingLeft: '38px', width: '100%' }}
+                style={{ paddingLeft: '42px', width: '100%' }}
               />
             </div>
           </div>
