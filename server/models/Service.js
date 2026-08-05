@@ -37,6 +37,8 @@ const serviceSchema = new mongoose.Schema(
 
 // Text index for keyword search
 serviceSchema.index({ title: 'text', description: 'text', category: 'text' });
+serviceSchema.index({ category: 1, isActive: 1, averageRating: -1 });
+serviceSchema.index({ providerId: 1, isActive: 1 });
 
 module.exports = mongoose.model('Service', serviceSchema);
 module.exports.SERVICE_CATEGORIES = SERVICE_CATEGORIES;

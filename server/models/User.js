@@ -25,4 +25,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.index({ role: 1, isApproved: 1, isSuspended: 1 });
+
 module.exports = mongoose.model('User', userSchema);
