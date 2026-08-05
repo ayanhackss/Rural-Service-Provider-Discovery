@@ -20,25 +20,31 @@ const meRoutes = require('./routes/me');
 
 const seedAdmin = require('./config/seedAdmin');
 
-// Connect to database (cached — safe for serverless and long-running)
-connectDB().then(() => seedAdmin());
+// Connect to database on startup if MONGO_URI exists
+if (process.env.MONGO_URI) {
+  connectDB().then(() => seedAdmin()).catch((err) => console.warn('Initial DB connect warning:', err.message));
+}
 
 const app = express();
 
-// Middleware — ensure DB is connected before every request (handles serverless cold starts)
+// Middleware — ensure DB is connected before every API request (handles serverless cold starts)
 app.use(async (req, res, next) => {
+  if (req.path === '/api/health' || req.path === '/health') return next();
+  if (!process.env.MONGO_URI) {
+    return res.status(503).json({ 
+      message: 'Database connection string (MONGO_URI) is missing in environment variables. Please configure it in your Vercel Dashboard.' 
+    });
+  }
   try {
     await connectDB();
     next();
   } catch (err) {
-    res.status(503).json({ message: 'Database unavailable. Please try again.' });
+    res.status(503).json({ message: `Database connection error: ${err.message}` });
   }
 });
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN
-    ? process.env.CLIENT_ORIGIN.split(',')
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: true, // Allow requesting origin including vercel.app and localhost
   credentials: true
 }));
 app.use(helmet());
