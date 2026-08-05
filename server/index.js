@@ -1,6 +1,6 @@
-// Local development entry point — imports the app and starts the HTTP server.
-// On Vercel, api/index.js is used instead (no listen() needed there).
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const app = require('./app');
 
 const PORT = process.env.PORT || 5000;
