@@ -86,43 +86,44 @@ export default function ManageBookings() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {bookings.map((b) => (
-                <div key={b._id} className="card">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 'var(--space-4)', alignItems: 'start' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
-                        <h3 style={{ fontStyle: 'italic', fontSize: 'var(--text-md)' }}>{b.serviceId?.title}</h3>
-                        <span className={`badge badge-${b.status}`}>{b.status}</span>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                          <User size={16} style={{ color: 'var(--color-muted)' }} />
-                          <span className="label" style={{ fontWeight: 400 }}>{b.residentId?.name} {b.residentId?.phone && `(+91 ${b.residentId.phone})`}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                          <CalendarDays size={16} style={{ color: 'var(--color-muted)' }} />
-                          <span style={{ fontFamily: 'var(--font-outlier)', fontSize: 'var(--text-xs)', color: 'var(--color-muted)' }}>
-                            {new Date(b.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })} at {b.timeSlot}
-                          </span>
-                        </div>
-                      </div>
-                      {b.notes && (
-                        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-dim)', marginTop: 'var(--space-2)', fontStyle: 'italic' }}>
-                          "{b.notes}"
-                        </p>
-                      )}
+                <div key={b._id} className="card booking-card">
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                      <h3 className="booking-card__title" style={{ margin: 0 }}>{b.serviceId?.title}</h3>
+                      <span className={`badge badge-${b.status}`}>{b.status}</span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', alignItems: 'flex-end' }}>
-                      {(ACTION_MAP[b.status] || []).map((action) => (
-                        <button
-                          key={action.status}
-                          onClick={() => handleAction(b._id, action.status)}
-                          className={`btn btn-sm ${action.style === 'primary' ? 'btn-primary' : action.style === 'success' ? 'btn-outline' : 'btn-ghost'}`}
-                          style={action.style === 'error' ? { color: 'var(--color-error)', borderColor: 'var(--color-error)' } : action.style === 'success' ? { color: 'var(--color-success)', borderColor: 'var(--color-success)' } : {}}
-                        >
-                          {action.label}
-                        </button>
-                      ))}
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', margin: 'var(--space-3) 0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                        <User size={16} style={{ color: 'var(--color-muted)' }} />
+                        <span className="label" style={{ fontWeight: 400 }}>{b.residentId?.name} {b.residentId?.phone && `(+91 ${b.residentId.phone})`}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                        <CalendarDays size={16} style={{ color: 'var(--color-muted)' }} />
+                        <span style={{ fontFamily: 'var(--font-outlier)', fontSize: 'var(--text-xs)', color: 'var(--color-muted)' }}>
+                          {new Date(b.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })} at {b.timeSlot}
+                        </span>
+                      </div>
                     </div>
+
+                    {b.notes && (
+                      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-ink-dim)', marginTop: 'var(--space-2)', fontStyle: 'italic', background: 'var(--color-paper-3)', padding: 'var(--space-2) var(--space-3)', borderRadius: 'var(--radius-sm)' }}>
+                        "{b.notes}"
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="booking-card__actions">
+                    {(ACTION_MAP[b.status] || []).map((action) => (
+                      <button
+                        key={action.status}
+                        onClick={() => handleAction(b._id, action.status)}
+                        className={`btn btn-sm ${action.style === 'primary' ? 'btn-primary' : action.style === 'success' ? 'btn-outline' : 'btn-ghost'}`}
+                        style={action.style === 'error' ? { color: 'var(--color-error)', borderColor: 'var(--color-error)' } : action.style === 'success' ? { color: 'var(--color-success)', borderColor: 'var(--color-success)' } : {}}
+                      >
+                        {action.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               ))}

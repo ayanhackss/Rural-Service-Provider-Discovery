@@ -105,25 +105,38 @@ export default function MyBookings() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               {bookings.map((b) => (
-                <div key={b._id} className="card" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 'var(--space-4)', alignItems: 'center' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-4)' }}>
-                      <div>
-                        <h3 style={{ fontStyle: 'italic', marginBottom: 'var(--space-1)' }}>{b.serviceId?.title}</h3>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-muted)', fontSize: 'var(--text-sm)' }}>
-                          <User size={14} /> {b.providerId?.name}
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontWeight: 600 }}>
-                          <CalendarDays size={16} color="var(--color-accent)" />
-                          {new Date(b.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </div>
+                <div key={b._id} className="card booking-card">
+                  <div>
+                    {/* Header meta: Category & Date */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                      <span className="label" style={{ color: 'var(--color-accent)', fontSize: 'var(--text-xs)' }}>
+                        {b.serviceId?.category || 'Service'}
+                      </span>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)', fontSize: 'var(--text-xs)', color: 'var(--color-muted)', fontFamily: 'var(--font-outlier)' }}>
+                        <CalendarDays size={14} style={{ color: 'var(--color-accent)' }} />
+                        {new Date(b.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {b.timeSlot && ` · ${b.timeSlot}`}
                       </div>
                     </div>
 
+                    {/* Service Title */}
+                    <h3 className="booking-card__title">
+                      {b.serviceId?.title}
+                    </h3>
+
+                    {/* Provider Info */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-muted)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
+                      <User size={14} />
+                      <span>{b.providerId?.name || 'Local Provider'}</span>
+                      {b.providerId?.location?.village && (
+                        <span style={{ color: 'var(--color-neutral)', fontSize: 'var(--text-xs)' }}>
+                          · {b.providerId.location.village}
+                        </span>
+                      )}
+                    </div>
+
                     {/* Status Timeline */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: 'var(--space-6)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: 'var(--space-2)' }}>
                       {['pending', 'confirmed', 'completed'].map((step, idx) => {
                         const statuses = ['pending', 'confirmed', 'completed'];
                         const currentIdx = statuses.indexOf(b.status === 'cancelled' ? 'pending' : b.status);
@@ -135,7 +148,7 @@ export default function MyBookings() {
                           <div key={step} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                             <div style={{ 
                               height: '4px', 
-                              backgroundColor: isCancelled ? 'var(--color-error)' : isPast ? 'var(--color-accent)' : 'var(--color-border)',
+                              backgroundColor: isCancelled ? 'var(--color-error)' : isPast ? 'var(--color-accent)' : 'var(--color-rule)',
                               borderRadius: '2px',
                               opacity: isPast ? 1 : 0.3
                             }}></div>
@@ -144,7 +157,7 @@ export default function MyBookings() {
                               textTransform: 'uppercase', 
                               letterSpacing: '0.05em',
                               fontWeight: isCurrent ? 700 : 400,
-                              color: isCancelled ? 'var(--color-error)' : isPast ? 'var(--color-text)' : 'var(--color-muted)' 
+                              color: isCancelled ? 'var(--color-error)' : isPast ? 'var(--color-ink)' : 'var(--color-muted)' 
                             }}>
                               {isCancelled ? 'Cancelled' : step}
                             </span>
@@ -154,18 +167,21 @@ export default function MyBookings() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', alignItems: 'flex-end' }}>
+                  {/* Actions Bar */}
+                  <div className="booking-card__actions">
                     {['pending', 'confirmed'].includes(b.status) && (
                       <button className="btn btn-outline btn-sm" onClick={() => handleCancel(b._id)} style={{ color: 'var(--color-error)', borderColor: 'var(--color-error)' }}>
-                        Cancel
+                        Cancel Booking
                       </button>
                     )}
                     {b.status === 'completed' && (
                       <button className="btn btn-primary btn-sm" onClick={() => openReview(b)}>
-                        Leave review
+                        Leave Review
                       </button>
                     )}
-                    <Link to={`/services/${b.serviceId?._id}`} className="btn btn-ghost btn-sm">View service</Link>
+                    <Link to={`/services/${b.serviceId?._id}`} className="btn btn-ghost btn-sm">
+                      View Service Details
+                    </Link>
                   </div>
                 </div>
               ))}
