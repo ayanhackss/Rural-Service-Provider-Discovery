@@ -70,14 +70,14 @@ export default function Announcements() {
               <Megaphone size={20} className="muted" /> Post New Announcement
             </h3>
             
-            <div className="form-group">
-              <label>Title</label>
-              <input type="text" className="input" value={title} onChange={e => setTitle(e.target.value)} required placeholder="E.g., Platform Maintenance This Weekend" />
+            <div className="form-group" style={{ marginBottom: 'var(--space-4)' }}>
+              <label className="form-label">Title</label>
+              <input type="text" className="form-input" value={title} onChange={e => setTitle(e.target.value)} required placeholder="E.g., Platform Maintenance This Weekend" />
             </div>
 
-            <div className="form-group">
-              <label>Message Body</label>
-              <textarea className="input" rows="4" value={body} onChange={e => setBody(e.target.value)} required placeholder="Provide details here..." />
+            <div className="form-group" style={{ marginBottom: 'var(--space-6)' }}>
+              <label className="form-label">Message Body</label>
+              <textarea className="form-textarea" rows="4" value={body} onChange={e => setBody(e.target.value)} required placeholder="Provide details here..." />
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={saving}>
